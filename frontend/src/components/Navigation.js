@@ -1,4 +1,4 @@
-// In your App.js or a separate Navbar component
+// src/components/Navigation.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -25,10 +25,13 @@ const Navigation = () => {
               <Link className="nav-link" to="/">Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/restaurants">Browse</Link>
+              <Link className="nav-link" to="/restaurants">All Restaurants</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/favorites">Favorites</Link>
+              <Link className="nav-link" to="/community">Community Finds</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/favorites">My Favorites</Link>
             </li>
           </ul>
         </div>

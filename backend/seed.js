@@ -12,6 +12,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
       
       {
         name: "Chilli's",
+        healthRating: 3.5,
         menu: [
           {
             name: "Ancho Salmon",
@@ -33,6 +34,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
       },
       {
         name: "Jack in The Box",
+        healthRating: 2.7,
         menu: [
           {
             name: "Chicken Fajita Pita",
@@ -54,6 +56,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
       },
       {
         name: "Panda Express",
+        healthRating: 2.8,
         menu: [
           {
             name: "Teriyaki Chicken Bowl",
@@ -75,6 +78,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
       },
       {
         name: "Taco Bell",
+        healthRating: 2.2,
         menu: [
           {
             name: "Cantina Chicken Bowl",
@@ -96,6 +100,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
       },
       {
         name: "Starbucks",
+        healthRating: 4.1,
         menu: [
           {
             name: "Spinach, Feta & Egg White Wrap",

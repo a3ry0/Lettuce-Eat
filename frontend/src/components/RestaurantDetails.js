@@ -2,9 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { addFavorite } from "../services/favoritesService";
 import MenuItem from "./MenuItem";
+import HealthRating from "./HealthRating";
+import DietFilter from "./DietFilter";
 
 const RestaurantDetails = ({ restaurantName }) => {
   const [menu, setMenu] = useState([]);
+  const [filteredMenu, setFilteredMenu] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,6 +25,7 @@ const RestaurantDetails = ({ restaurantName }) => {
         }
         const data = await response.json();
         setMenu(data);
+        setFilteredMenu(data); // Initialize filtered menu with all items
       } catch (err) {
         setError(err.message);
       } finally {
@@ -47,23 +51,44 @@ const RestaurantDetails = ({ restaurantName }) => {
     }
   };
 
+  // Handle filtered menu updates from DietFilter component
+  const handleFilteredMenuChange = (filteredItems) => {
+    setFilteredMenu(filteredItems);
+  };
+
   return (
     <div>
-      <h2>{restaurantName} - Menu</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>{restaurantName} - Menu</h2>
+        <HealthRating restaurantName={restaurantName} />
+      </div>
+      
+      <DietFilter 
+        menuItems={menu} 
+        onFilteredMenuChange={handleFilteredMenuChange} 
+      />
+      
       {loading && <p>Loading menu...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
+      
+      <div className="mb-3">
+        <small className="text-muted">
+          {filteredMenu.length} items shown {filteredMenu.length !== menu.length ? `(filtered from ${menu.length} total)` : ''}
+        </small>
+      </div>
+      
       <ul style={{ listStyleType: 'none', padding: 0 }}>
-        {menu.length > 0 ? (
-          menu.map((item, index) => (
+        {filteredMenu.length > 0 ? (
+          filteredMenu.map((item, index) => (
             <MenuItem 
-            key={index} 
-            item={item} 
-            onAction={() => handleAddFavorite(item)} 
-            actionLabel="Favorite" 
+              key={index} 
+              item={item} 
+              onAction={() => handleAddFavorite(item)} 
+              actionLabel="Favorite" 
             />
           ))
         ) : (
-          !loading && <p>No menu items available.</p>
+          !loading && <p>No menu items available{menu.length > 0 ? ' for the selected filter.' : '.'}</p>
         )}
       </ul>
     </div>

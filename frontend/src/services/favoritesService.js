@@ -1,17 +1,17 @@
 // src/services/favoritesService.js
 
-const USE_DUMMY_FAVORITES = true;
-const DUMMY_KEY = "dummyFavorites";
+const USE_DUMMY_FAVORITES = false; // Changed to false to use the microservice
+const FAVORITES_API_URL = "http://localhost:5001/api/favorites";
 
-// Helper function to get favorites from localStorage
+// Helper function to get favorites from localStorage (kept for fallback)
 const getStoredFavorites = () => {
-  const data = localStorage.getItem(DUMMY_KEY);
+  const data = localStorage.getItem("dummyFavorites");
   return data ? JSON.parse(data) : [];
 };
 
-// Helper function to save favorites to localStorage
+// Helper function to save favorites to localStorage (kept for fallback)
 const saveFavorites = (favorites) => {
-  localStorage.setItem(DUMMY_KEY, JSON.stringify(favorites));
+  localStorage.setItem("dummyFavorites", JSON.stringify(favorites));
 };
 
 export const getFavorites = async () => {
@@ -19,34 +19,46 @@ export const getFavorites = async () => {
     // Return favorites stored in localStorage
     return getStoredFavorites();
   }
-  // For a real microservice, use the fetch call below:
-  const response = await fetch("http://localhost:5001/api/favorites");
-  if (!response.ok) {
-    throw new Error("Failed to fetch favorites");
+  
+  try {
+    const response = await fetch(FAVORITES_API_URL);
+    if (!response.ok) {
+      throw new Error("Failed to fetch favorites");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    // Fallback to localStorage if API fails
+    return getStoredFavorites();
   }
-  return response.json();
 };
 
 export const addFavorite = async (favoriteItem) => {
   if (USE_DUMMY_FAVORITES) {
     // Get current favorites from localStorage
     const currentFavorites = getStoredFavorites();
-    // Create a dummy _id using timestamp (or any unique string)
+    // Create a dummy _id using timestamp
     const newItem = { ...favoriteItem, _id: Date.now().toString() };
     currentFavorites.push(newItem);
     saveFavorites(currentFavorites);
     return newItem;
   }
-  // For a real microservice, use the fetch call below:
-  const response = await fetch("http://localhost:5001/api/favorites", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(favoriteItem),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to add favorite");
+  
+  try {
+    const response = await fetch(FAVORITES_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(favoriteItem),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to add favorite");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error adding favorite:", error);
+    // Fallback to localStorage if API fails
+    return addFavorite({ ...favoriteItem, USE_DUMMY_FAVORITES: true });
   }
-  return response.json();
 };
 
 export const removeFavorite = async (id) => {
@@ -56,12 +68,21 @@ export const removeFavorite = async (id) => {
     saveFavorites(newFavorites);
     return Promise.resolve({ _id: id });
   }
-  // For a real microservice, use the fetch call below:
-  const response = await fetch(`http://localhost:5001/api/favorites/${id}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) {
-    throw new Error("Failed to remove favorite");
+  
+  try {
+    const response = await fetch(`${FAVORITES_API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to remove favorite");
+    }
+    return response.json();
+  } catch (error) {
+    console.error("Error removing favorite:", error);
+    // Fallback to localStorage if API fails
+    const currentFavorites = getStoredFavorites();
+    const newFavorites = currentFavorites.filter((fav) => fav._id !== id);
+    saveFavorites(newFavorites);
+    return Promise.resolve({ _id: id });
   }
-  return response.json();
 };

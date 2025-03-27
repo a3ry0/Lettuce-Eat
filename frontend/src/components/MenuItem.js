@@ -4,6 +4,7 @@ import React, { useState } from "react";
 const MenuItem = ({
   item,
   restaurantName,
+  submitter,
   onAction,
   actionLabel = "Favorite",
   actionClass,
@@ -56,6 +57,11 @@ const MenuItem = ({
             <strong>Fats:</strong>{" "}
             {item.fats !== undefined ? `${item.fats}g` : "N/A"}
           </p>
+          {submitter && (
+            <p>
+              <strong>Submission by </strong> {submitter}
+            </p>
+          )}
           {onAction && (
             <button
               onClick={(e) => {

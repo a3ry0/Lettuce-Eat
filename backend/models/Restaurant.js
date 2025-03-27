@@ -1,7 +1,9 @@
+// models/Restaurants.js
 const mongoose = require("mongoose");
 
 const RestaurantSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    healthRating: { type: Number, default: 3.0 },
     menu: [
         {
             name: { type: String, required: true },
